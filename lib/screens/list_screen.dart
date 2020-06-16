@@ -1,3 +1,8 @@
+import 'package:airtask/controllers/storage_controller.dart';
+import 'package:airtask/models/task_group.dart';
+import 'package:airtask/services/service_locator.dart';
+import 'package:airtask/widgets/group_modal.dart';
+import 'package:airtask/widgets/task_modal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -5,55 +10,139 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 
 class ListScreen extends StatefulWidget {
-  final int listId;
+  final TaskGroup taskGroup;
 
-  ListScreen({Key key, this.listId}) : super(key: key);
+  ListScreen({Key key, this.taskGroup}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ListScreen();
 }
 
 class _ListScreen extends State<ListScreen> {
+
+  final storageController = serviceLocator<StorageController>();
+  var _taskGroup;
+
+  void showModal(Widget contents) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0))),
+        builder: (context) {
+          return SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: contents,
+            ),
+          );
+        }
+    );
+  }
+
+  @override
+  void initState() {
+    storageController.initController();
+    _taskGroup = widget.taskGroup;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         extendBody: true,
-        backgroundColor: Colors.redAccent,
+        backgroundColor: _taskGroup.color,
         body: SafeArea(
           child: Column(
             children: <Widget>[
               Expanded(
                   child: Container(
-                    decoration: BoxDecoration(color: Colors.redAccent),
+                    decoration: BoxDecoration(color: _taskGroup.color),
                     child: Padding(
                       padding: EdgeInsets.only(left: 30.0, right: 30.0),
                       child: Row(
                         children: <Widget>[
-                          InkWell(
-                            onTap: () => Navigator.pop(context),
-                            child: Icon(OMIcons.arrowBack, color: Colors.white),
+                          ClipOval(
+                            child: Material(
+                              color: _taskGroup.color,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: Icon(OMIcons.arrowBack, color: Colors.white),
+                              ),
+                            ),
                           ),
                           SizedBox(width: 10),
-                          Text('List ${widget.listId + 1}',
+                          Text(_taskGroup.title,
                               style: GoogleFonts.nunito(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 20,
                                   color: Colors.white)),
                           Spacer(),
-                          InkWell(
-                            onTap: () {
-                              print("hi");
-                            },
-                            child: Icon(OMIcons.edit, color: Colors.white),
+                          ClipOval(
+                            child: Material(
+                              color: _taskGroup.color,
+                              child: InkWell(
+                                onTap: () async {
+                                  await showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(15.0),
+                                            topRight: Radius.circular(15.0))),
+                                    builder: (context) {
+                                      return SingleChildScrollView(
+                                        child: Container(
+                                          padding: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context).viewInsets.bottom),
+                                          child: GroupModal(storageController: storageController, group: widget.taskGroup),
+                                        ),
+                                      );
+                                    }
+                                  ).then((newTaskGroup) {
+                                    setState(() {
+                                      if (newTaskGroup != null){
+                                        _taskGroup.color = newTaskGroup.color;
+                                        _taskGroup.title = newTaskGroup.title;
+                                      }
+                                    });
+                                  });
+                                },
+                                child: Icon(OMIcons.edit, color: Colors.white),
+                              ),
+                            ),
                           ),
                           SizedBox(width: 5),
-                          InkWell(
-                            onTap: () {
-                              print("hi");
-                            },
-                            child: Icon(OMIcons.add,
-                                color: Colors.white, size: 30),
-                          )
+                          ClipOval(
+                            child: Material(
+                              color: _taskGroup.color,
+                              child: InkWell(
+                                onTap: () async {
+                                  await showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(15.0),
+                                            topRight: Radius.circular(15.0))),
+                                    builder: (context) {
+                                      return SingleChildScrollView(
+                                        child: Container(
+                                          padding: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context).viewInsets.bottom),
+                                          child: TaskModal(storageController: storageController, groupId: _taskGroup.id),
+                                        ),
+                                      );
+                                    }
+                                  ).then((value) {setState(() {});});
+                                },
+                                child: Icon(OMIcons.add, color: Colors.white, size: 30),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -90,49 +179,99 @@ class _ListScreen extends State<ListScreen> {
                           ),
                           SizedBox(height: 20),
                           Expanded(
-                            child: Container(
-                              child: ScrollConfiguration(
-                                behavior: ScrollBehavior()
-                                  ..buildViewportChrome(
-                                      context, null, AxisDirection.down),
-                                child: ListView.builder(
-                                    padding: EdgeInsets.all(10.0),
-                                    shrinkWrap: true,
-                                    itemCount: 20,
-                                    itemBuilder: (context, index) {
-                                      return Dismissible(
-                                        direction: DismissDirection.endToStart,
-                                        background: Container(
-                                          alignment: Alignment.centerRight,
-                                          padding: EdgeInsets.only(right: 20.0),
-                                          color: Colors.red,
-                                          child: Icon(OMIcons.delete,
-                                              color: Colors.white),
-                                        ),
-                                        key: ObjectKey(index),
-                                        child: InkWell(
-                                          onTap: () {},
-                                          child: Container(
-                                            margin:
-                                                EdgeInsets.only(bottom: 0.0),
-                                            child: Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Row(
-                                                children: <Widget>[
-                                                  Icon(Icons.remove),
-                                                  SizedBox(width: 10),
-                                                  Text('Item ${index + 1}',
-                                                      style: TextStyle(
-                                                          color: Colors.black))
-                                                ],
+                            child: FutureBuilder(
+                              future: storageController.tasks,
+                              builder: (context, snapshot) {
+                                var tasks;
+                                if (snapshot.hasData)
+                                  tasks = (snapshot.data).where((e) => e.groupId == _taskGroup.id).toList() ?? [];
+                                else tasks = [];
+                                if (tasks.length > 0) return Container(
+                                    child: ScrollConfiguration(
+                                      behavior: ScrollBehavior()
+                                        ..buildViewportChrome(
+                                            context, null, AxisDirection.down),
+                                      child: ListView.builder(
+                                          padding: EdgeInsets.all(10.0),
+                                          shrinkWrap: true,
+                                          itemCount: tasks.length,
+                                          itemBuilder: (context, index) {
+                                            return Dismissible(
+                                              secondaryBackground: Container(
+                                                alignment: Alignment.centerRight,
+                                                padding: EdgeInsets.only(right: 20.0),
+                                                child: Icon(OMIcons.delete,
+                                                    color: Colors.red),
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                              ),
-                            ),
+                                              background: Container(
+                                                alignment: Alignment.centerLeft,
+                                                padding: EdgeInsets.only(left: 20.0),
+                                                child: Icon(OMIcons.edit,
+                                                    color: Colors.green),
+                                              ),
+                                              // ignore: missing_return
+                                              confirmDismiss: (DismissDirection direction) async {
+                                                if (direction == DismissDirection.startToEnd) {
+                                                  showModalBottomSheet(
+                                                      context: context,
+                                                      isScrollControlled: true,
+                                                      shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.only(
+                                                              topLeft: Radius.circular(15.0),
+                                                              topRight: Radius.circular(15.0))),
+                                                      builder: (context) {
+                                                        return SingleChildScrollView(
+                                                          child: Container(
+                                                            padding: EdgeInsets.only(
+                                                                bottom: MediaQuery.of(context).viewInsets.bottom),
+                                                            child: TaskModal(storageController: storageController, groupId: _taskGroup.id, task: tasks[index]),
+                                                          ),
+                                                        );
+                                                      });
+                                                  setState(() {});
+                                                  return false;
+                                                } else {
+                                                  storageController.deleteTask(id: tasks[index].id);
+                                                  setState(() {});
+                                                  return true;
+                                                }
+                                              },
+                                              key: ObjectKey(index),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    tasks[index].completed = !tasks[index].completed;
+                                                  });
+                                                },
+                                                child: Container(
+                                                  margin:
+                                                  EdgeInsets.only(bottom: 0.0),
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Icon(tasks[index].completed
+                                                            ? Icons.check : Icons.remove),
+                                                        SizedBox(width: 10),
+                                                        Text(tasks[index].text,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: TextStyle(
+                                                                decoration: tasks[index].completed
+                                                                    ? TextDecoration.lineThrough : null,
+                                                                color: tasks[index].completed
+                                                                    ? Colors.black54 : Colors.black))
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          }),
+                                    ),
+                                  );
+                                else return Center(child:Text('Add a task!'));
+                              }
+                            )
                           ),
                         ],
                       ),

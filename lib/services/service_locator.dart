@@ -6,5 +6,5 @@ GetIt serviceLocator = GetIt.instance;
 
 void setupServiceLocator() {
   serviceLocator.registerFactory<StorageController>(() => StorageController());
-  serviceLocator.registerFactory<StorageApi>(() => FakeStorageApiImpl());
+  serviceLocator.registerFactory<StorageApi>(() => StorageApiImpl());
 }

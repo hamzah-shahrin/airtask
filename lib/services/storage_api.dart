@@ -18,9 +18,9 @@ class StorageApiImpl implements StorageApi {
     final prefs = await SharedPreferences.getInstance();
     List<TaskGroup> taskGroups = [];
     if (prefs.containsKey('taskGroups') && prefs.get('taskGroups').length > 0)
-      jsonDecode(prefs.get('taskGroups').forEach((key, value){
+      jsonDecode(prefs.get('taskGroups')).forEach((key, value){
         taskGroups.add(TaskGroup.fromJson(jsonDecode(value)));
-      }));
+      });
     return taskGroups;
   }
 
@@ -29,9 +29,9 @@ class StorageApiImpl implements StorageApi {
     final prefs = await SharedPreferences.getInstance();
     List<Task> tasks = [];
     if (prefs.containsKey('tasks') && prefs.get('tasks').length > 0)
-      jsonDecode(prefs.get('tasks').forEach((key, value){
+      jsonDecode(prefs.get('tasks')).forEach((key, value){
         tasks.add(Task.fromJson(jsonDecode(value)));
-      }));
+      });
     return tasks;
   }
 
@@ -69,9 +69,27 @@ class FakeStorageApiImpl implements StorageApi {
   }
 
   @override
-  Future<List<Task>> fetchTasks() {
-    // TODO: implement fetchTasks
-    throw UnimplementedError();
+  Future<List<Task>> fetchTasks() async {
+    var tasks = <Task>[];
+    tasks.add(Task(
+      id: 0,
+      groupId: 0,
+      text: "Test task 0",
+      completed: true,
+    ));
+    tasks.add(Task(
+      id: 1,
+      groupId: 1,
+      text: "Test task 1",
+      completed: false,
+    ));
+    tasks.add(Task(
+      id: 2,
+      groupId: 1,
+      text: "Test task 2",
+      completed: false,
+    ));
+    return tasks;
   }
 
   @override
