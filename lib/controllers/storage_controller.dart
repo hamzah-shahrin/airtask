@@ -65,8 +65,7 @@ class StorageController extends ChangeNotifier {
     var _taskGroups = await taskGroups;
     var _tasks = await tasks;
     _taskGroups.removeWhere((element) => element.id == id);
-    _tasks.removeWhere((element) => element.groupId == id);
-    serviceLocator<StorageApi>().saveData(await tasks, _taskGroups);
+    serviceLocator<StorageApi>().saveData(_tasks, _taskGroups);
     notifyListeners();
   }
 

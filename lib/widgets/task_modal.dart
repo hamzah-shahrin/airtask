@@ -1,18 +1,18 @@
 import 'package:airtask/controllers/storage_controller.dart';
 import 'package:airtask/models/task.dart';
+import 'package:airtask/models/task_group.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
 
 class TaskModal extends StatefulWidget {
 
   final StorageController storageController;
-  final int groupId;
+  final TaskGroup taskGroup;
   final Task task;
   TaskModal({Key key,
     @required this.storageController,
-    @required this.groupId, this.task}) : super(key: key);
+    @required this.taskGroup, this.task}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _TaskModal();
@@ -48,11 +48,11 @@ class _TaskModal extends State<TaskModal>{
                   Tooltip(
                     preferBelow: false,
                     message: '42 character limit. Stick to concise tasks!',
-                    child: Icon(Icons.help_outline, color: Colors.indigo[900], size: 30),
+                    child: Icon(Icons.help_outline, color: widget.taskGroup.color, size: 30),
                   ),
                   ClipOval(
                     child: Material(
-                      color: Colors.indigo[900],
+                      color: widget.taskGroup.color,
                       child: InkWell(
                         splashColor: Colors.indigoAccent,
                         child: SizedBox(width: 25, height: 25,
@@ -61,9 +61,9 @@ class _TaskModal extends State<TaskModal>{
                                 color: Colors.white, size: 18)),
                         onTap: () {
                           if (widget.task == null) widget.storageController.addTask(
-                            groupId: widget.groupId, text: _textController.text);
+                            groupId: widget.taskGroup.id, text: _textController.text);
                           else widget.storageController.editTask(
-                            id: widget.task.id, groupId: widget.groupId,
+                            id: widget.task.id, groupId: widget.taskGroup.id,
                             text: _textController.text, completed: widget.task.completed);
                           _textController.clear();
                           FocusScope.of(context).unfocus();
@@ -76,7 +76,7 @@ class _TaskModal extends State<TaskModal>{
               ),
               TextFormField(
                 inputFormatters: [
-                  LengthLimitingTextInputFormatter(42)
+                  LengthLimitingTextInputFormatter(120)
                 ],
                 controller: _textController,
                 decoration: InputDecoration(labelText: 'Task',

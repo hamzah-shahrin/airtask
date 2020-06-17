@@ -2,10 +2,6 @@ import 'package:airtask/screens/home_screen.dart';
 import 'package:airtask/services/service_locator.dart';
 import 'package:flutter/material.dart';
 
-//TODO: Edit group
-//TODO: Help buttons
-//TODO: Checked off tasks
-
 void main() {
   setupServiceLocator();
   runApp(MyApp());

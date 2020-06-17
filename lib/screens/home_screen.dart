@@ -172,7 +172,7 @@ class _HomeScreen extends State<HomeScreen> {
                                                     alignment: Alignment.centerRight,
                                                     padding: EdgeInsets.only(right: 20.0),
                                                     child: Icon(OMIcons.delete,
-                                                        color: Colors.black),
+                                                        color: Colors.red),
                                                   ),
                                                   child: InkWell(
                                                     onTap: () async {
@@ -209,18 +209,23 @@ class _HomeScreen extends State<HomeScreen> {
                                                         padding:
                                                             EdgeInsets.all(30),
                                                         child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                           children: <Widget>[
-                                                            Text(
-                                                                groups[index]
-                                                                    .title,
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white)),
-                                                            Spacer(),
-                                                            Text('3/5',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white))
+                                                            Expanded(
+                                                              child: Text(
+                                                                  groups[index]
+                                                                      .title,
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white)),
+                                                            ),
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(left: 8.0),
+                                                              child: Text('3/5',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white)),
+                                                            )
                                                           ],
                                                         ),
                                                       ),

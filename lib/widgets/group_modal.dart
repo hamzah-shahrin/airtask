@@ -3,6 +3,7 @@ import 'package:airtask/models/task_group.dart';
 import 'package:airtask/widgets/colored_radio_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class GroupModal extends StatefulWidget {
 
@@ -34,6 +35,7 @@ class _GroupModal extends State<GroupModal> {
     _selectedColor = widget.group == null ? 0 : _colors.indexWhere(
         (element) => element.value == widget.group.color.value);
     _titleController.text = widget.group == null ? null : widget.group.title;
+    widget.storageController.initController();
     super.initState();
   }
 
@@ -54,7 +56,7 @@ class _GroupModal extends State<GroupModal> {
                   Text(widget.group == null ? 'Add a new list' : 'Edit a list'),
                   ClipOval(
                     child: Material(
-                      color: Colors.indigo[900],
+                      color: _colors[_selectedColor],
                       child: InkWell(
                         splashColor: Colors.indigoAccent,
                         child: SizedBox(width: 25, height: 25,
@@ -85,6 +87,9 @@ class _GroupModal extends State<GroupModal> {
                 ],
               ),
               TextFormField(
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(60)
+                ],
                 controller: _titleController,
                 decoration: InputDecoration(labelText: 'Title',
                     labelStyle: TextStyle(fontSize: 14)),

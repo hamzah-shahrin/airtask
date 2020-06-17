@@ -65,81 +65,89 @@ class _ListScreen extends State<ListScreen> {
                       padding: EdgeInsets.only(left: 30.0, right: 30.0),
                       child: Row(
                         children: <Widget>[
-                          ClipOval(
-                            child: Material(
-                              color: _taskGroup.color,
-                              child: InkWell(
-                                onTap: () => Navigator.pop(context),
-                                child: Icon(OMIcons.arrowBack, color: Colors.white),
+                          Padding(
+                            padding: const EdgeInsets.only(right:10.0),
+                            child: ClipOval(
+                              child: Material(
+                                color: _taskGroup.color,
+                                child: InkWell(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Icon(OMIcons.arrowBack, color: Colors.white),
+                                ),
                               ),
                             ),
                           ),
-                          SizedBox(width: 10),
-                          Text(_taskGroup.title,
-                              style: GoogleFonts.nunito(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 20,
-                                  color: Colors.white)),
-                          Spacer(),
-                          ClipOval(
-                            child: Material(
-                              color: _taskGroup.color,
-                              child: InkWell(
-                                onTap: () async {
-                                  await showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(15.0),
-                                            topRight: Radius.circular(15.0))),
-                                    builder: (context) {
-                                      return SingleChildScrollView(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context).viewInsets.bottom),
-                                          child: GroupModal(storageController: storageController, group: widget.taskGroup),
-                                        ),
-                                      );
-                                    }
-                                  ).then((newTaskGroup) {
-                                    setState(() {
-                                      if (newTaskGroup != null){
-                                        _taskGroup.color = newTaskGroup.color;
-                                        _taskGroup.title = newTaskGroup.title;
+                          Expanded(
+                            child: Text(_taskGroup.title,
+                                style: GoogleFonts.nunito(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 20,
+                                    color: Colors.white)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left:30.0),
+                            child: ClipOval(
+                              child: Material(
+                                color: _taskGroup.color,
+                                child: InkWell(
+                                  onTap: () async {
+                                    await showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(15.0),
+                                              topRight: Radius.circular(15.0))),
+                                      builder: (context) {
+                                        return SingleChildScrollView(
+                                          child: Container(
+                                            padding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context).viewInsets.bottom),
+                                            child: GroupModal(storageController: storageController, group: widget.taskGroup),
+                                          ),
+                                        );
                                       }
+                                    ).then((newTaskGroup) {
+                                      setState(() {
+                                        if (newTaskGroup != null){
+                                          _taskGroup.color = newTaskGroup.color;
+                                          _taskGroup.title = newTaskGroup.title;
+                                        }
+                                      });
                                     });
-                                  });
-                                },
-                                child: Icon(OMIcons.edit, color: Colors.white),
+                                  },
+                                  child: Icon(OMIcons.edit, color: Colors.white),
+                                ),
                               ),
                             ),
                           ),
-                          SizedBox(width: 5),
-                          ClipOval(
-                            child: Material(
-                              color: _taskGroup.color,
-                              child: InkWell(
-                                onTap: () async {
-                                  await showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(15.0),
-                                            topRight: Radius.circular(15.0))),
-                                    builder: (context) {
-                                      return SingleChildScrollView(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context).viewInsets.bottom),
-                                          child: TaskModal(storageController: storageController, groupId: _taskGroup.id),
-                                        ),
-                                      );
-                                    }
-                                  ).then((value) {setState(() {});});
-                                },
-                                child: Icon(OMIcons.add, color: Colors.white, size: 30),
+                          Padding(
+                            padding: const EdgeInsets.only(left:5.0),
+                            child: ClipOval(
+                              child: Material(
+                                color: _taskGroup.color,
+                                child: InkWell(
+                                  onTap: () async {
+                                    await showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(15.0),
+                                              topRight: Radius.circular(15.0))),
+                                      builder: (context) {
+                                        return SingleChildScrollView(
+                                          child: Container(
+                                            padding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context).viewInsets.bottom),
+                                            child: TaskModal(storageController: storageController, taskGroup: _taskGroup),
+                                          ),
+                                        );
+                                      }
+                                    ).then((value) {setState(() {});});
+                                  },
+                                  child: Icon(OMIcons.add, color: Colors.white, size: 30),
+                                ),
                               ),
                             ),
                           ),
@@ -209,7 +217,6 @@ class _ListScreen extends State<ListScreen> {
                                                 child: Icon(OMIcons.edit,
                                                     color: Colors.green),
                                               ),
-                                              // ignore: missing_return
                                               confirmDismiss: (DismissDirection direction) async {
                                                 if (direction == DismissDirection.startToEnd) {
                                                   showModalBottomSheet(
@@ -224,7 +231,7 @@ class _ListScreen extends State<ListScreen> {
                                                           child: Container(
                                                             padding: EdgeInsets.only(
                                                                 bottom: MediaQuery.of(context).viewInsets.bottom),
-                                                            child: TaskModal(storageController: storageController, groupId: _taskGroup.id, task: tasks[index]),
+                                                            child: TaskModal(storageController: storageController, taskGroup: _taskGroup, task: tasks[index]),
                                                           ),
                                                         );
                                                       });
@@ -240,6 +247,12 @@ class _ListScreen extends State<ListScreen> {
                                               child: InkWell(
                                                 onTap: () {
                                                   setState(() {
+                                                    storageController.editTask(
+                                                        id: tasks[index].id,
+                                                        groupId: tasks[index].groupId,
+                                                        text: tasks[index].text,
+                                                        completed: !tasks[index].completed
+                                                    );
                                                     tasks[index].completed = !tasks[index].completed;
                                                   });
                                                 },
@@ -253,13 +266,13 @@ class _ListScreen extends State<ListScreen> {
                                                         Icon(tasks[index].completed
                                                             ? Icons.check : Icons.remove),
                                                         SizedBox(width: 10),
-                                                        Text(tasks[index].text,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(
-                                                                decoration: tasks[index].completed
-                                                                    ? TextDecoration.lineThrough : null,
-                                                                color: tasks[index].completed
-                                                                    ? Colors.black54 : Colors.black))
+                                                        Flexible(
+                                                          child: Text(tasks[index].text,
+                                                              style: TextStyle(
+                                                                  decoration: null,
+                                                                  color: tasks[index].completed
+                                                                      ? Colors.black54 : Colors.black)),
+                                                        )
                                                       ],
                                                     ),
                                                   ),
